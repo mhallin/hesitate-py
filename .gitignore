@@ -1,4 +1,8 @@
+/.vagrant
+/.tox
 /dist
+
+/Vagrantfile
 
 __pycache__
 
