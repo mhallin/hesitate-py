@@ -82,6 +82,12 @@ class AssertionTransformer(ast.NodeTransformer):
             and node.module == '__future__'
 
     def visit_Module(self, node):
+        pre_nodes = list(itertools.takewhile(
+            lambda node: (self._is_docstring(node)
+                         or self._is_future_import(node)),
+            node.body))
+        rest_nodes = [self.visit(n) for n in node.body[len(pre_nodes):]]
+
         importnode = ast.ImportFrom(
             module='hesitate.driver',
             names=[
@@ -91,18 +97,16 @@ class AssertionTransformer(ast.NodeTransformer):
                 ast.alias(
                     name='timed',
                     asname=self.ASSERTION_TIMER_IMPORTED_NAME)],
-            lineno=0,
-            col_offset=0)
+            lineno=1,
+            col_offset=0,
+            level=0)
 
-        pre_nodes = list(itertools.takewhile(
-            lambda node: (self._is_docstring(node)
-                         or self._is_future_import(node)),
-            node.body))
-        rest_nodes = [self.visit(n) for n in node.body[len(pre_nodes):]]
+        if pre_nodes:
+            importnode = ast.copy_location(importnode, pre_nodes[0])
 
         new_mod = ast.Module(
             body=pre_nodes + [importnode] + rest_nodes,
-            lineno=0,
+            lineno=1,
             col_offset=0)
 
         return new_mod
@@ -119,7 +123,9 @@ class AssertionTransformer(ast.NodeTransformer):
             ast.Call(
                 func=assertion_test_name,
                 args=[srcname_node, lineno_node, col_offset_node],
-                keywords=[]),
+                keywords=[],
+                starargs=None,
+                kwargs=None),
             node)
 
         timer_name = ast.copy_location(
@@ -129,7 +135,9 @@ class AssertionTransformer(ast.NodeTransformer):
             ast.Call(
                 func=timer_name,
                 args=[srcname_node, lineno_node, col_offset_node],
-                keywords=[]),
+                keywords=[],
+                starargs=None,
+                kwargs=None),
             node)
         with_node = ast.copy_location(
             self._make_with_node(timer_call, [node]),
