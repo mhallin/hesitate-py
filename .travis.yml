@@ -8,6 +8,7 @@ python:
 
 install:
   - pip install -q Django~=1.7
+  - pip install .
 
 script:
   - python setup.py test
