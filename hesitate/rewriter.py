@@ -44,10 +44,9 @@ class RewriterHook(object):
     def load_module(self, name):
         code = self.loaded_modules[name]
         mod = imp.new_module(name)
+        sys.modules[name] = mod
 
         exec(code, mod.__dict__)
-
-        sys.modules[name] = mod
 
         return mod
 
