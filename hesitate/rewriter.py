@@ -64,6 +64,7 @@ def rewrite_source(source, modpath):
 class AssertionTransformer(ast.NodeTransformer):
     ASSERTION_TEST_IMPORTED_NAME = '@hesitate_should_assert'
     ASSERTION_TIMER_IMPORTED_NAME = '@hesitate_timed'
+    HAS_WITHITEM = hasattr(ast, 'withitem')
 
     def __init__(self, modpath):
         self.modpath = modpath
@@ -128,11 +129,7 @@ class AssertionTransformer(ast.NodeTransformer):
                 keywords=[]),
             node)
         with_node = ast.copy_location(
-            ast.With(
-                items=[ast.withitem(
-                    context_expr=timer_call,
-                    optional_vars=None)],
-                body=[node]),
+            self._make_with_node(timer_call, [node]),
             node)
 
         new_node = ast.copy_location(
@@ -143,3 +140,16 @@ class AssertionTransformer(ast.NodeTransformer):
             node)
 
         return new_node
+
+    def _make_with_node(self, with_expr, body):
+        if self.HAS_WITHITEM:
+            return ast.With(
+                items=[ast.withitem(
+                    context_expr=with_expr,
+                    optional_vars=None)],
+                body=body)
+        else:
+            return ast.With(
+                context_expr=with_expr,
+                optional_vars=None,
+                body=body)
