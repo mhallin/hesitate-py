@@ -17,7 +17,10 @@ class RewriterHook(object):
             path = path[0]
             modpath = os.path.join(path, full_name.rpartition('.')[2] + '.py')
             desc = ('.py', 'r', imp.PY_SOURCE)
-            fobj = open(modpath)
+            try:
+                fobj = open(modpath)
+            except IOError:
+                return None
         else:
             try:
                 fobj, modpath, desc = imp.find_module(full_name, path)
