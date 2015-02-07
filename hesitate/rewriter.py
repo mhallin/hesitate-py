@@ -4,6 +4,8 @@ import itertools
 import os.path
 import sys
 
+from . import conf
+
 
 class RewriterHook(object):
     def __init__(self):
@@ -50,7 +52,18 @@ class RewriterHook(object):
         return mod
 
 
-def attach_hook():
+def attach_hook(initial_probability=None,
+                target_timing=None,
+                convergence_factor=None):
+    if initial_probability is not None:
+        conf.set_initial_probability(initial_probability)
+
+    if target_timing is not None:
+        conf.set_target_timing(target_timing)
+
+    if convergence_factor is not None:
+        conf.set_convergence_factor(convergence_factor)
+
     sys.meta_path.insert(0, RewriterHook())
 
 
