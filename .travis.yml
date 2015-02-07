@@ -6,10 +6,16 @@ python:
   - "3.4"
   - "pypy"
 
+env:
+  matrix:
+    - DJANGO=1.7.0
+    - DJANGO=1.6.0
+
 install:
-  - pip install -q Django~=1.7
+  - pip install -q Django~=$DJANGO
   - pip install .
 
 script:
   - python setup.py test
-  - cd tests/django17; python manage.py test
+  - if [ "$DJANGO" = "1.7.0" ]; then cd tests/django17; python manage.py test; fi
+  - if [ "$DJANGO" = "1.6.0" ]; then cd tests/django16; python manage.py test; fi
