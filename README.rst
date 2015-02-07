@@ -2,6 +2,9 @@
 Hestiate
 ********
 
+.. image:: https://travis-ci.org/mhallin/hesitate-py.svg?branch=master
+   :target: https://travis-ci.org/mhallin/hesitate-py
+
 Like ``assert``, but less... assertive.
 
 ----
