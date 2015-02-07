@@ -6,6 +6,9 @@ python:
   - "3.4"
   - "pypy"
 
+install:
+  - pip install -q Django~=1.7
+
 script:
   - python setup.py test
   - cd tests/django17; python manage.py test
