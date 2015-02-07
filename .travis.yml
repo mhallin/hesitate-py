@@ -6,4 +6,6 @@ python:
   - "3.4"
   - "pypy"
 
-script: python setup.py test
+script:
+  - python setup.py test
+  - cd tests/django17; python manage.py test
