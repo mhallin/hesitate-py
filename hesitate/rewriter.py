@@ -34,7 +34,7 @@ class RewriterHook(object):
         try:
             if modtype == imp.PY_SOURCE:
                 code = rewrite_source(fobj.read(), modpath)
-                self.loaded_modules[full_name] = code
+                self.loaded_modules[full_name] = code, modpath
 
                 return self
         finally:
@@ -42,8 +42,10 @@ class RewriterHook(object):
                 fobj.close()
 
     def load_module(self, name):
-        code = self.loaded_modules[name]
+        code, modpath = self.loaded_modules[name]
         mod = imp.new_module(name)
+        mod.__file__ = modpath
+
         sys.modules[name] = mod
 
         exec(code, mod.__dict__)
